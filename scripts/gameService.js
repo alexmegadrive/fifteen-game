@@ -1,6 +1,11 @@
 class gameService {
     matrix = [];
     moves = 0;
+    colors = ['cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink','fuchsia','cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink','fuchsia', 'coral' ]
+
+    // seconds = 0;
+
+
 
 
     //  constructor(products = []) {
@@ -37,6 +42,12 @@ class gameService {
     generateMatrix(boardSize) {
         this.matrix = []
         this.moves = 0
+        this.startTimer()
+        if (document.querySelector('.winMessage')) {
+        document.querySelector('.board').style.opacity = '1'
+        document.querySelector('.winMessage').innerText = ''
+        }
+
         let array = this.generateRandomArray(boardSize)
 
         for (let i = 0; i < boardSize; i++) {
@@ -79,13 +90,32 @@ class gameService {
                 if (this.matrix[i][j] !== 0) {
                     tile.innerText = this.matrix[i][j]
                     tile.dataset.value = this.matrix[i][j]
+                    setColor(tile, tile.dataset.value,this.colors)
                 } else tile.dataset.value = 'empty'
                 board.appendChild(tile)
             }
         }
+
+        function setColor(element, value, colorsArr) {
+            // const color = getRandomColor(colorsArr)
+            // element.style.backgroundColor = color;
+            const color = colorsArr[value]
+            element.style.backgroundColor = color;
+            element.style.boxShadow = `0 0 2px ${color}, 0 0 10px ${color}`
+        }
+    
+        
+        function getRandomColor(colorsArr) {
+            // console.log('this.colors :', this.colors);
+
+            // округляем и умножаем на длину массива
+            const index = Math.floor(Math.random() * colorsArr.length)
+            return colorsArr[index]
+        }
     }
+
     shuffleBlocks() {
-        console.log(' this.moves :',  this.moves);
+        console.log(' this.moves :', this.moves);
         this.generateMatrix(this.matrix.length)
         this.renderBlocks()
         this.renderScore()
@@ -98,18 +128,21 @@ class gameService {
 
     renderControls() {
         let controlsDiv = document.createElement('div')
+        controlsDiv.id = 'interface'
         let shuffleBtn = document.createElement('button')
         shuffleBtn.innerText = 'Shuffle and start'
         shuffleBtn.dataset.action = 'shuffle'
-      
+        shuffleBtn.id = 'shuffleBtn'
+
         let score = document.createElement('div')
+        score.id = 'score'
         let movesBlock = document.createElement('div')
         movesBlock.id = 'movesBlock'
         movesBlock.innerText = 'Moves: 0'
         let timeBlock = document.createElement('div')
         timeBlock.id = 'timeBlock'
         timeBlock.innerText = '00:00'
-        
+
         score.appendChild(movesBlock, timeBlock)
         score.appendChild(timeBlock)
 
@@ -141,7 +174,7 @@ class gameService {
 
         //вычисляем, есть ли рядом пустой элемент
         if (clickedValue !== 'empty') {
-            if (j-1 >= 0 && this.matrix[i][j - 1] == 0) {
+            if (j - 1 >= 0 && this.matrix[i][j - 1] == 0) {
                 // console.log('слева')
                 emptyPosition = [i, j - 1]
             } else if ((j + 1) < this.matrix.length && this.matrix[i][j + 1] == 0) {
@@ -150,7 +183,7 @@ class gameService {
             } else if ((i + 1) < this.matrix.length && this.matrix[i + 1][j] == 0) {
                 // console.log('снизу')
                 emptyPosition = [i + 1, j]
-            } else if (i-1 >= 0 && this.matrix[i - 1][j] == 0) {
+            } else if (i - 1 >= 0 && this.matrix[i - 1][j] == 0) {
                 // console.log('сверху')
                 emptyPosition = [i - 1, j]
             }
@@ -165,6 +198,69 @@ class gameService {
         this.renderBlocks()
         this.moves++
         this.renderScore()
-        console.log('this.moves :', this.moves);
+        // console.log('this.moves :', this.moves);
+        this.checkWin()
     }
+
+    checkWin() {
+        //собираем матрицу в массив
+        let checkArr = []
+        for (let i = 0; i < this.matrix.length; i++) {
+            for (let j = 0; j < this.matrix.length; j++) {
+                checkArr.push(this.matrix[i][j])
+            }
+        }
+        //     for (let k = 0; k < checkArr.length; k++) { 
+        //         if (checkArr[k+1] == checkArr[k]+1){
+
+        //         }
+        // }
+        let winArray = checkArr.slice().sort((a, b) => a - b).filter(el => el !== 0)
+        winArray.push(0)
+        winArray = winArray.join('')
+
+        // console.log('checkArr :', checkArr);
+        // console.log('winArray :', winArray);
+
+
+        if (checkArr.join('') == winArray) {
+            console.log('YOU WIN')
+            this.renderWinMessage()
+            
+        }
+    }
+
+    renderWinMessage() {
+        let board = document.querySelector('.board')
+        board.style.opacity = '0.5'
+        let winMessageDiv = document.createElement('div')
+        winMessageDiv.classList.add('winMessage')
+        winMessageDiv.innerText = `Hooray! You solved the puzzle in ${this.countTime()} and ${this.moves} moves!"`
+        // winMessageDiv.innerText = `123123 123 `
+        // board.appendChild(winMessageDiv)
+        document.body.appendChild(winMessageDiv)
+    }
+
+    startTimer() {
+        console.log('start timer')
+    //    if(timer) this.startTimer.clearInterval(timer)
+    this.seconds = 0;
+    if (!this.isRunning) {
+        this.isRunning = true; 
+        const TIMER = setInterval(() => {
+
+            document.querySelector('#timeBlock').innerHTML = this.countTime()
+            this.seconds++
+            }, 1000)
+        }
+    }
+
+    countTime() {
+        let minutes = Math.floor(this.seconds/60)
+        let remainedSeconds = this.seconds - (minutes*60)
+        return String(minutes).padStart(2, '0') + ':' + String(remainedSeconds).padStart(2, '0')
+        
+    }
+
+
 }

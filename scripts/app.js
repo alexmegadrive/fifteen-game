@@ -5,10 +5,10 @@ let moves = 0
 
 //делегирование событий
 document.body.addEventListener('click' , function(event){
+
     //обработка клика
     if (event.target.dataset.value) {
-        game.checkFreeSpace(event.target.dataset.value) 
-        
+        game.checkFreeSpace(event.target.dataset.value)         
     }
     //перемешивание блоков
     if (event.target.dataset.action && event.target.dataset.action == 'shuffle') {
