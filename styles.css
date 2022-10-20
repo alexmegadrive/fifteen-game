@@ -5,6 +5,7 @@
 }
 
 body {
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -14,6 +15,18 @@ body {
 .board {
     padding: 2px;
     border: 1px solid green;
-    width: 400px;
-    height: 400px;
+    /* width: 400px; */
+    /* height: 400px; */
+
+    display: grid;
+    /* flex-wrap: wrap; */
+}
+.tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* padding: 2px; */
+    border: 1px solid black;
+    width: 80px;
+    height: 80px;
 }
