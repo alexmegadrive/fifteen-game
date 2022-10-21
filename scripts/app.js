@@ -18,6 +18,10 @@ document.body.addEventListener('click' , function(event){
     if (event.target.dataset.action && event.target.dataset.action == 'showStats') {
     game.showStats()
     }
+    //вкл-выкл звук
+    if (event.target.dataset.action && event.target.dataset.action == 'toggleSound') {
+    game.toggleSound()
+    }
     //сохранение стейта 
     if (event.target.dataset.action && event.target.dataset.action == 'save') {
     game.saveToLocalStorage()
@@ -34,6 +38,14 @@ document.body.addEventListener('click' , function(event){
     if (event.target.dataset.action && event.target.dataset.action == 'create4') {
         localStorage.removeItem('matrix');
         game.createGame(4) 
+        }
+    if (event.target.dataset.action && event.target.dataset.action == 'create6') {
+        localStorage.removeItem('matrix');
+        game.createGame(6) 
+        }
+    if (event.target.dataset.action && event.target.dataset.action == 'create8') {
+        localStorage.removeItem('matrix');
+        game.createGame(8) 
         }
 
 })

@@ -1,6 +1,7 @@
 class gameService {
     matrix = [];
     moves = 0;
+    sound = true
     colors = ['cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink', 'fuchsia', 'cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink', 'fuchsia', 'coral']
 
     // seconds = 0;
@@ -100,9 +101,15 @@ class gameService {
         size3Btn.dataset.action = 'create3'
         let size4Btn = document.createElement('button')
         size4Btn.innerText = '4x4'
-        // console.log('size4Btn :', size4Btn);
         size4Btn.dataset.action = 'create4'
-        sizeSelector.append(size2Btn, size3Btn, size4Btn)
+        let size6Btn = document.createElement('button')
+        size6Btn.innerText = '6x6'
+        size6Btn.dataset.action = 'create6'
+        let size8Btn = document.createElement('button')
+        size8Btn.innerText = '8x8'
+        size8Btn.dataset.action = 'create8'
+
+        sizeSelector.append(size2Btn, size3Btn, size4Btn, size6Btn, size8Btn)
 
         document.body.appendChild(board);
         document.body.appendChild(sizeSelector);
@@ -130,7 +137,16 @@ class gameService {
         function setColor(element, value, colorsArr) {
             // const color = getRandomColor(colorsArr)
             // element.style.backgroundColor = color;
-            const color = colorsArr[value]
+           const  color = (value > colorsArr.length-1)?
+           colorsArr[value%colorsArr.length]
+           :colorsArr[value]
+            // const color = colorsArr[value]
+            // console.log('value :', value);
+            // console.log('colorsArr.length%value :', value%colorsArr.length);
+            // console.log('colorsArr[colorsArr.length%value] :', colorsArr[colorsArr.length%value]);
+
+            // console.log('color :', color);
+
             element.style.backgroundColor = color;
             element.style.boxShadow = `0 0 2px ${color}, 0 0 10px ${color}`
         }
@@ -158,8 +174,8 @@ class gameService {
     }
 
     renderControls() {
-        let controlsDiv = document.createElement('div')
-        controlsDiv.classList.add('interface')
+        let interfaceBlock = document.createElement('div')
+        interfaceBlock.classList.add('interface')
         let shuffleBtn = document.createElement('button')
         shuffleBtn.innerText = 'Shuffle and start'
         shuffleBtn.dataset.action = 'shuffle'
@@ -169,32 +185,44 @@ class gameService {
         saveBtn.dataset.action = 'save'
         saveBtn.innerText = 'Save'
         saveBtn.style.width = '100% '
-        saveBtn.style.marginTop = '10px '
 
-        let showStats = document.createElement('button')
-        showStats.dataset.action = 'showStats'
-        showStats.innerText = 'showStats'
+        let showStatsBtn = document.createElement('button')
+        showStatsBtn.dataset.action = 'showStats'
+        showStatsBtn.innerText = 'showStats'
 
         let score = document.createElement('div')
         score.id = 'score'
+
         let movesBlock = document.createElement('div')
         movesBlock.id = 'movesBlock'
         movesBlock.innerText = 'Moves: 0'
+
         let timeBlock = document.createElement('div')
         timeBlock.id = 'timeBlock'
         timeBlock.innerText = '00:00'
 
+        let toggleSoundBtn = document.createElement('button')
+        toggleSoundBtn.innerText = 'Sound ON/OFF'
+        toggleSoundBtn.dataset.action = 'toggleSound'
+
+
         score.append(movesBlock, timeBlock)
         // score.appendChild(timeBlock)
 
+        let controlsBlock = document.createElement('div')
+        controlsBlock.style.display = 'flex'
+        controlsBlock.style.flexDirection = 'row'
+        controlsBlock.style.marginTop = '10px '
+
+        controlsBlock.append(saveBtn, showStatsBtn, toggleSoundBtn)
 
 
-        controlsDiv.append(shuffleBtn, saveBtn, showStats, score)
+        interfaceBlock.append(shuffleBtn, controlsBlock, score)
         // controlsDiv.appendChild(shuffleBtn)
         // controlsDiv.appendChild(score)
         // controlsDiv.appendChild(score)
 
-        document.body.appendChild(controlsDiv)
+        document.body.appendChild(interfaceBlock)
     }
     handleClick(clickedValue) {
         console.log('clickedValue :', clickedValue);
@@ -238,7 +266,7 @@ class gameService {
             }
         }
         if (emptyPosition.length > 0) {
-            this.playWhooshSound()
+           if (this.sound) this.playWhooshSound()
             setTimeout(
                 (function () {
                     this.moveTile(clickedPosition, emptyPosition)
@@ -362,5 +390,8 @@ class gameService {
             `)
         } else alert('Вы еще не проходили игру в этой размерности')
 
+    }
+    toggleSound() {
+        this.sound = !this.sound
     }
 }
