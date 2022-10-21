@@ -1,7 +1,7 @@
 class gameService {
     matrix = [];
     moves = 0;
-    colors = ['cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink','fuchsia','cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink','fuchsia', 'coral' ]
+    colors = ['cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink', 'fuchsia', 'cyan', 'aqua', 'greenyellow', 'gold', 'magenta', 'tomato', 'hotpink', 'fuchsia', 'coral']
 
     // seconds = 0;
 
@@ -14,17 +14,22 @@ class gameService {
 
     createGame(boardSize) {
 
+        const localMatrix = JSON.parse(localStorage.getItem('matrix')) || null
         // let matrix = JSON.parse(localStorage.getItem('matrix')) || boardSize
         // console.log('matrix :', matrix);
+
+
         //очистка страницы от предыдущей доски
         document.body.innerHTML = ''
 
         //рендер панели кнопок
         this.renderControls()
 
+        console.log('localMatrix :', localMatrix);
+
         //сгенерировать матрицу случайных чисел
-        if (!JSON.parse(localStorage.getItem('matrix'))) this.generateMatrix(matrix)
-        else this.matrix = JSON.parse(localStorage.getItem('matrix'))
+        if (!localMatrix) this.generateMatrix(boardSize)
+        else this.matrix = localMatrix
 
         //рендер доски
         this.renderBoard()
@@ -51,8 +56,8 @@ class gameService {
         this.moves = 0
         this.startTimer()
         if (document.querySelector('.winMessage')) {
-        document.querySelector('.board').style.opacity = '1'
-        document.querySelector('.winMessage').innerText = ''
+            document.querySelector('.board').style.opacity = '1'
+            document.querySelector('.winMessage').innerText = ''
         }
 
         let array = this.generateRandomArray(boardSize)
@@ -84,8 +89,8 @@ class gameService {
         board.style.gridTemplateRows = gridStyle
 
         let sizeSelector = document.createElement('div')
-        sizeSelector.classList.add('interface') 
-        sizeSelector.classList.add('interface-size-select') 
+        sizeSelector.classList.add('interface')
+        sizeSelector.classList.add('interface-size-select')
 
         let size2Btn = document.createElement('button')
         size2Btn.innerText = '2x2'
@@ -97,7 +102,7 @@ class gameService {
         size4Btn.innerText = '4x4'
         // console.log('size4Btn :', size4Btn);
         size4Btn.dataset.action = 'create4'
-        sizeSelector.append(size2Btn,size3Btn,size4Btn)
+        sizeSelector.append(size2Btn, size3Btn, size4Btn)
 
         document.body.appendChild(board);
         document.body.appendChild(sizeSelector);
@@ -116,7 +121,7 @@ class gameService {
                 if (this.matrix[i][j] !== 0) {
                     tile.innerText = this.matrix[i][j]
                     tile.dataset.value = this.matrix[i][j]
-                    setColor(tile, tile.dataset.value,this.colors)
+                    setColor(tile, tile.dataset.value, this.colors)
                 } else tile.dataset.value = 'empty'
                 board.appendChild(tile)
             }
@@ -129,8 +134,8 @@ class gameService {
             element.style.backgroundColor = color;
             element.style.boxShadow = `0 0 2px ${color}, 0 0 10px ${color}`
         }
-    
-        
+
+
         function getRandomColor(colorsArr) {
             // console.log('this.colors :', this.colors);
 
@@ -154,7 +159,7 @@ class gameService {
 
     renderControls() {
         let controlsDiv = document.createElement('div')
-        controlsDiv.classList.add('interface') 
+        controlsDiv.classList.add('interface')
         let shuffleBtn = document.createElement('button')
         shuffleBtn.innerText = 'Shuffle and start'
         shuffleBtn.dataset.action = 'shuffle'
@@ -166,7 +171,9 @@ class gameService {
         saveBtn.style.width = '100% '
         saveBtn.style.marginTop = '10px '
 
-
+        let showStats = document.createElement('button')
+        showStats.dataset.action = 'showStats'
+        showStats.innerText = 'showStats'
 
         let score = document.createElement('div')
         score.id = 'score'
@@ -182,7 +189,7 @@ class gameService {
 
 
 
-        controlsDiv.append(shuffleBtn, saveBtn, score)
+        controlsDiv.append(shuffleBtn, saveBtn, showStats, score)
         // controlsDiv.appendChild(shuffleBtn)
         // controlsDiv.appendChild(score)
         // controlsDiv.appendChild(score)
@@ -230,24 +237,28 @@ class gameService {
                 emptyPosition = [i - 1, j]
             }
         }
-        if (emptyPosition.length > 0){
+        if (emptyPosition.length > 0) {
             this.playWhooshSound()
             setTimeout(
-               (function() {this.moveTile(clickedPosition, emptyPosition)}).bind(this)
-            , 700);
-        
+                (function () {
+                    this.moveTile(clickedPosition, emptyPosition)
+                }).bind(this), 300);
+
         }
     }
 
     moveTile(clickedPosition, emptyPosition) {
+    
         let clickedValue = this.matrix[clickedPosition[0]][clickedPosition[1]]
-        this.matrix[emptyPosition[0]][emptyPosition[1]] = clickedValue
+        if (clickedValue) {
         this.matrix[clickedPosition[0]][clickedPosition[1]] = 0
+        this.matrix[emptyPosition[0]][emptyPosition[1]] = clickedValue
         this.renderBlocks()
         this.moves++
         this.renderScore()
         // console.log('this.moves :', this.moves);
         this.checkWin()
+        }
     }
 
     checkWin() {
@@ -274,7 +285,6 @@ class gameService {
         if (checkArr.join('') == winArray) {
             console.log('YOU WIN')
             this.renderWinMessage()
-            
         }
     }
 
@@ -286,28 +296,33 @@ class gameService {
         winMessageDiv.innerText = `Hooray! You solved the puzzle in ${this.countTime()} and ${this.moves} moves!"`
         // winMessageDiv.innerText = `123123 123 `
         // board.appendChild(winMessageDiv)
+        // this.saveResultToLocalStorage(this.matrix.length,`${this.seconds} seconds and ${this.moves} moves`)
+        this.saveResultToLocalStorage(this.matrix.length, {
+            seconds: this.seconds,
+            moves: this.moves
+        })
         document.body.appendChild(winMessageDiv)
     }
 
     startTimer() {
         console.log('start timer')
-    //    if(timer) this.startTimer.clearInterval(timer)
-    this.seconds = 0;
-    if (!this.isRunning) {
-        this.isRunning = true; 
-        const TIMER = setInterval(() => {
+        //    if(timer) this.startTimer.clearInterval(timer)
+        this.seconds = 0;
+        if (!this.isRunning) {
+            this.isRunning = true;
+            const TIMER = setInterval(() => {
 
-            document.querySelector('#timeBlock').innerHTML = this.countTime()
-            this.seconds++
+                document.querySelector('#timeBlock').innerHTML = this.countTime()
+                this.seconds++
             }, 1000)
         }
     }
 
     countTime() {
-        let minutes = Math.floor(this.seconds/60)
-        let remainedSeconds = this.seconds - (minutes*60)
+        let minutes = Math.floor(this.seconds / 60)
+        let remainedSeconds = this.seconds - (minutes * 60)
         return String(minutes).padStart(2, '0') + ':' + String(remainedSeconds).padStart(2, '0')
-        
+
     }
 
     playWhooshSound() {
@@ -320,5 +335,32 @@ class gameService {
         const res = localStorage.getItem('matrix');
         console.log('parse :', JSON.parse(res));
         console.log('this.matrix :', this.matrix);
+    }
+    saveResultToLocalStorage(size, result) {
+        const table = JSON.parse(localStorage.getItem(size)) || []
+        // const newTable = table+result
+        table.push(result)
+
+        localStorage.setItem(size, JSON.stringify(table));
+        // localStorage.getItem('results')
+        console.log('отображаем сохраненки :', localStorage.getItem(this.matrix.length));
+    }
+    showStats() {
+        const resultsArray = JSON.parse(localStorage.getItem(this.matrix.length))
+        if (resultsArray) {
+            let top10 = resultsArray.sort((a, b) => a.seconds - b.seconds).slice(0, 10)
+            let tableText = ''
+            for (let i = 0; i < top10.length; i++) {
+                let position = `
+            ${i+1}. ${top10[i].seconds} seconds and ${top10[i].moves} moves `
+                tableText += position
+            }
+            const SIZE = this.matrix.length
+            alert(`
+            Размерность: ${SIZE}*${SIZE}
+            ТОП10: ${tableText}
+            `)
+        } else alert('Вы еще не проходили игру в этой размерности')
+
     }
 }

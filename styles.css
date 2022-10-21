@@ -24,6 +24,9 @@ body {
     color: white;
 }
 
+button {
+    width: 100%;
+}
 .board {
     position: relative;
     padding: 2px;
@@ -80,7 +83,7 @@ body {
 
 
 .down {
-    animation: down 0.7s ease-in ;
+    animation: down 0.3s forwards ease-in ;
     /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
 }
 @keyframes down {
@@ -94,7 +97,7 @@ body {
     }
   }
 .up {
-    animation: up 0.7s ease-in ;
+    animation: up 0.3s forwards ease-in ;
     /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
 }
 @keyframes up {
@@ -108,7 +111,7 @@ body {
     }
   }
 .left {
-    animation: left 0.7s ease-in ;
+    animation: left 0.3s forwards  ease-in ;
     /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
 }
 @keyframes left {
@@ -121,7 +124,7 @@ body {
     }
   }
 .right {
-    animation: right 0.7s ease-in ;
+    animation: right 0.3s forwards ease-in ;
     /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
 }
 @keyframes right {
