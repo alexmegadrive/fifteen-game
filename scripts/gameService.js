@@ -13,6 +13,10 @@ class gameService {
     // }
 
     createGame(boardSize) {
+
+        //очистка страницы от предыдущей доски
+        document.body.innerHTML = ''
+
         //рендер панели кнопок
         this.renderControls()
 
@@ -76,7 +80,26 @@ class gameService {
         board.style.gridTemplateColumns = gridStyle
         board.style.gridTemplateRows = gridStyle
 
+        let sizeSelector = document.createElement('div')
+        sizeSelector.classList.add('interface') 
+        sizeSelector.classList.add('interface-size-select') 
+
+        let size2Btn = document.createElement('button')
+        size2Btn.innerText = '2x2'
+        size2Btn.dataset.action = 'create2'
+        let size3Btn = document.createElement('button')
+        size3Btn.innerText = '3x3'
+        size3Btn.dataset.action = 'create3'
+        let size4Btn = document.createElement('button')
+        size4Btn.innerText = '4x4'
+        // console.log('size4Btn :', size4Btn);
+        size4Btn.dataset.action = 'create4'
+        sizeSelector.append(size2Btn,size3Btn,size4Btn)
+
         document.body.appendChild(board);
+        document.body.appendChild(sizeSelector);
+
+
         return board;
     }
 
@@ -114,9 +137,9 @@ class gameService {
         }
     }
 
-    shuffleBlocks() {
+    shuffleBlocks(arg) {
         console.log(' this.moves :', this.moves);
-        this.generateMatrix(this.matrix.length)
+        this.generateMatrix(arg || this.matrix.length)
         this.renderBlocks()
         this.renderScore()
     }
@@ -128,7 +151,7 @@ class gameService {
 
     renderControls() {
         let controlsDiv = document.createElement('div')
-        controlsDiv.id = 'interface'
+        controlsDiv.classList.add('interface') 
         let shuffleBtn = document.createElement('button')
         shuffleBtn.innerText = 'Shuffle and start'
         shuffleBtn.dataset.action = 'shuffle'
@@ -153,7 +176,7 @@ class gameService {
 
         document.body.appendChild(controlsDiv)
     }
-    checkFreeSpace(clickedValue) {
+    handleClick(clickedValue) {
         console.log('clickedValue :', clickedValue);
 
         let i = 0,
@@ -175,20 +198,32 @@ class gameService {
         //вычисляем, есть ли рядом пустой элемент
         if (clickedValue !== 'empty') {
             if (j - 1 >= 0 && this.matrix[i][j - 1] == 0) {
+                document.querySelector(`[data-value="${this.matrix[i][j]}"]`).classList.add('left')
                 // console.log('слева')
                 emptyPosition = [i, j - 1]
             } else if ((j + 1) < this.matrix.length && this.matrix[i][j + 1] == 0) {
                 // console.log('справа')
+                document.querySelector(`[data-value="${this.matrix[i][j]}"]`).classList.add('right')
                 emptyPosition = [i, j + 1]
             } else if ((i + 1) < this.matrix.length && this.matrix[i + 1][j] == 0) {
                 // console.log('снизу')
                 emptyPosition = [i + 1, j]
+                document.querySelector(`[data-value="${this.matrix[i][j]}"]`).classList.add('down')
+                // console.log('add down')
             } else if (i - 1 >= 0 && this.matrix[i - 1][j] == 0) {
                 // console.log('сверху')
+                document.querySelector(`[data-value="${this.matrix[i][j]}"]`).classList.add('up')
+
                 emptyPosition = [i - 1, j]
             }
         }
-        if (emptyPosition.length > 0) this.moveTile(clickedPosition, emptyPosition)
+        if (emptyPosition.length > 0){
+            this.playWhooshSound()
+            setTimeout(
+               (function() {this.moveTile(clickedPosition, emptyPosition)}).bind(this)
+            , 700);
+        
+        }
     }
 
     moveTile(clickedPosition, emptyPosition) {
@@ -262,5 +297,9 @@ class gameService {
         
     }
 
+    playWhooshSound() {
+        let snd = new Audio('./../assets/whoosh.wav'); // buffers automatically when created
+        snd.play();
+    }
 
 }

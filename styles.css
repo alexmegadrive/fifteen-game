@@ -1,8 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: "Open Sans", sans-serif;
+  /* font-family: "Roboto"; */
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
 
 body {
     height: 100vh;
@@ -32,13 +42,24 @@ body {
     align-items: center;
     /* padding: 2px; */
     border: 1px solid black;
-    width: 80px;
-    height: 80px;
+    width: 10vw;
+    height: 10vw;
+    font-size: inherit;
+
 }
 
-#interface {
+.interface {
     width: 150px;
     margin-bottom: 20px;
+    margin-top: 20px;
+}
+.interface-size-select {
+    display: flex;
+    justify-content: space-between;
+}
+.interface-size-select > button {
+    width: 50px;
+    cursor: pointer;
 }
 
 #score {
@@ -56,3 +77,60 @@ body {
     left: 50%;
     transform: translate(-50%,-50%);
 }
+
+
+.down {
+    animation: down 0.7s ease-in ;
+    /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
+}
+@keyframes down {
+    from {
+        transform: translateY(0);
+    }
+  
+    to {
+        transform: translateY(+10vw);
+
+    }
+  }
+.up {
+    animation: up 0.7s ease-in ;
+    /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
+}
+@keyframes up {
+    from {
+        transform: translateY(0);
+    }
+  
+    to {
+        transform: translateY(-10vw);
+
+    }
+  }
+.left {
+    animation: left 0.7s ease-in ;
+    /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
+}
+@keyframes left {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-10vw);
+
+    }
+  }
+.right {
+    animation: right 0.7s ease-in ;
+    /* animation: down 0.2s ease delay iteration-count direction fill-mode; */
+}
+@keyframes right {
+    from {
+        transform: translateX(0);
+    }
+  
+    to {
+        transform: translateX(+10vw);
+
+    }
+  }
