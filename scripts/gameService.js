@@ -14,6 +14,8 @@ class gameService {
 
     createGame(boardSize) {
 
+        // let matrix = JSON.parse(localStorage.getItem('matrix')) || boardSize
+        // console.log('matrix :', matrix);
         //очистка страницы от предыдущей доски
         document.body.innerHTML = ''
 
@@ -21,7 +23,8 @@ class gameService {
         this.renderControls()
 
         //сгенерировать матрицу случайных чисел
-        this.generateMatrix(boardSize)
+        if (!JSON.parse(localStorage.getItem('matrix'))) this.generateMatrix(matrix)
+        else this.matrix = JSON.parse(localStorage.getItem('matrix'))
 
         //рендер доски
         this.renderBoard()
@@ -157,6 +160,14 @@ class gameService {
         shuffleBtn.dataset.action = 'shuffle'
         shuffleBtn.id = 'shuffleBtn'
 
+        let saveBtn = document.createElement('button')
+        saveBtn.dataset.action = 'save'
+        saveBtn.innerText = 'Save'
+        saveBtn.style.width = '100% '
+        saveBtn.style.marginTop = '10px '
+
+
+
         let score = document.createElement('div')
         score.id = 'score'
         let movesBlock = document.createElement('div')
@@ -166,13 +177,15 @@ class gameService {
         timeBlock.id = 'timeBlock'
         timeBlock.innerText = '00:00'
 
-        score.appendChild(movesBlock, timeBlock)
-        score.appendChild(timeBlock)
+        score.append(movesBlock, timeBlock)
+        // score.appendChild(timeBlock)
 
 
 
-        controlsDiv.appendChild(shuffleBtn)
-        controlsDiv.appendChild(score)
+        controlsDiv.append(shuffleBtn, saveBtn, score)
+        // controlsDiv.appendChild(shuffleBtn)
+        // controlsDiv.appendChild(score)
+        // controlsDiv.appendChild(score)
 
         document.body.appendChild(controlsDiv)
     }
@@ -302,4 +315,10 @@ class gameService {
         snd.play();
     }
 
+    saveToLocalStorage() {
+        localStorage.setItem('matrix', JSON.stringify(this.matrix));
+        const res = localStorage.getItem('matrix');
+        console.log('parse :', JSON.parse(res));
+        console.log('this.matrix :', this.matrix);
+    }
 }
