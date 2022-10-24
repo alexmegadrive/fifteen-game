@@ -315,7 +315,7 @@ class gameService {
     }
 
     playWhooshSound() {
-        let snd = new Audio('./../assets/whoosh.wav'); // buffers automatically when created
+        let snd = new Audio('https://cdn.pixabay.com/download/audio/2021/08/04/audio_67d243357f.mp3?filename=whoosh-6316.mp3'); // buffers automatically when created
         snd.play();
     }
 
